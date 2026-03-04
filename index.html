@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime Knowledge Test</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
+    color: white;
+    margin: 0;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 650px;
+    margin: auto;
+}
+
+.quiz-card {
+    background: #1a1a1a;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+}
+
+.title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 30px;
+}
+
+.question {
+    margin-bottom: 25px;
+}
+
+.question h3 {
+    margin-bottom: 12px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+label:hover {
+    background: #2a2a2a;
+}
+
+input[type="radio"] {
+    margin-right: 8px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: crimson;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: red;
+}
+
+#loading {
+    display:none;
+    text-align:center;
+    margin-top:50px;
+}
+
+.progress-bar {
+    width: 100%;
+    background: #333;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.progress {
+    width: 0%;
+    height: 20px;
+    background: crimson;
+    transition: width 0.2s;
+}
+
+#prank {
+    display:none;
+    background:red;
+    animation: flash 0.15s infinite alternate;
+}
+
+@keyframes flash {
+    from { background:red; }
+    to { background:black; }
+}
+
+.shake {
+    animation: shake 0.1s infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(5px,5px); }
+    25% { transform: translate(-5px,-5px); }
+    50% { transform: translate(5px,-5px); }
+    75% { transform: translate(-5px,5px); }
+    100% { transform: translate(5px,5px); }
+}
+
+.glitch {
+    font-size: 42px;
+    text-align:center;
+    text-shadow: 3px 3px red, -3px -3px blue;
+    margin-top:30px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container" id="quiz">
+    <div class="quiz-card">
+        <h1 class="title">Anime Knowledge Test</h1>
+        <p class="subtitle">Jawab semua pertanyaan untuk melihat skor Anda.</p>
+
+        <form id="quizForm">
+            <div class="question">
+                <h3>1. Siapa karakter utama Naruto?</h3>
+                <label><input type="radio" name="q1" required> Naruto</label>
+                <label><input type="radio" name="q1"> Doraemon</label>
+            </div>
+
+            <div class="question">
+                <h3>2. Luffy berasal dari anime?</h3>
+                <label><input type="radio" name="q2" required> One Piece</label>
+                <label><input type="radio" name="q2"> Spongebob</label>
+            </div>
+
+            <div class="question">
+                <h3>3. Goku berasal dari anime?</h3>
+                <label><input type="radio" name="q3" required> Dragon Ball</label>
+                <label><input type="radio" name="q3"> Teletubbies</label>
+            </div>
+
+            <button type="button" onclick="validateQuiz()">Submit Jawaban</button>
+        </form>
+    </div>
+</div>
+
+<div id="loading">
+    <h2>Menganalisis jawaban...</h2>
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+</div>
+
+<div id="prank">
+    <h1 class="glitch">💀 ANDA TERKENA RICKROLL 💀</h1>
+
+    <video id="rickVideo" width="100%" playsinline>
+        <source src="rickroll.mp4" type="video/mp4">
+    </video>
+</div>
+
+<script>
+function validateQuiz() {
+    const form = document.getElementById("quizForm");
+    if (!form.checkValidity()) {
+        alert("Harap jawab semua pertanyaan terlebih dahulu.");
+        return;
+    }
+    startLoading();
+}
+
+function startLoading(){
+    document.getElementById("quiz").style.display="none";
+    document.getElementById("loading").style.display="block";
+
+    let progress = document.getElementById("progress");
+    let width = 0;
+
+    let interval = setInterval(function(){
+        if(width >= 100){
+            clearInterval(interval);
+            showPrank();
+        } else {
+            width += 5;
+            progress.style.width = width + "%";
+        }
+    }, 100);
+}
+
+function showPrank(){
+    document.getElementById("loading").style.display="none";
+    var prank = document.getElementById("prank");
+    prank.style.display="block";
+
+    document.body.classList.add("shake");
+
+    var video = document.getElementById("rickVideo");
+    video.volume = 1.0;
+    video.play();
+
+    if (video.requestFullscreen) {
+        video.requestFullscreen();
+    } else if (video.webkitRequestFullscreen) {
+        video.webkitRequestFullscreen();
+    }
+
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioContext.createMediaElementSource(video);
+    const gainNode = audioContext.createGain();
+
+    gainNode.gain.value = 4.0;
+
+    source.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+}
+</script>
+
+</body>
+</html>
