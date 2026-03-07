@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime Knowledge</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Segoe UI,Roboto,Arial;
+background:linear-gradient(180deg,#070707,#0f0f0f);
+color:white;
+text-align:center;
+overflow:hidden;
+}
+
+/* HEADER */
+
+h1{
+margin-top:40px;
+font-size:36px;
+letter-spacing:1px;
+font-weight:700;
+color:#ffffff;
+text-shadow:0 0 15px rgba(255,255,255,0.15);
+}
+
+/* QUIZ CARD */
+
+#quizBox{
+max-width:720px;
+margin:auto;
+margin-top:50px;
+background:linear-gradient(180deg,#141414,#101010);
+padding:40px;
+border-radius:18px;
+box-shadow:
+0 20px 60px rgba(0,0,0,0.8),
+0 0 30px rgba(0,0,0,0.6);
+border:1px solid rgba(255,255,255,0.04);
+transition:0.3s;
+}
+
+/* LEVEL */
+
+#level{
+font-size:18px;
+color:#bbbbbb;
+margin-bottom:20px;
+letter-spacing:1px;
+}
+
+/* QUESTION */
+
+#question{
+font-size:26px;
+font-weight:600;
+margin-bottom:25px;
+line-height:1.4;
+}
+
+/* ANSWERS */
+
+#answers{
+display:grid;
+grid-template-columns:1fr;
+gap:12px;
+}
+
+/* BUTTON */
+
+button{
+width:100%;
+padding:16px;
+font-size:17px;
+background:linear-gradient(180deg,#1f1f1f,#191919);
+color:white;
+border:none;
+border-radius:10px;
+cursor:pointer;
+transition:all .18s ease;
+box-shadow:
+0 6px 14px rgba(0,0,0,0.6),
+inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+button:hover{
+background:linear-gradient(180deg,#2a2a2a,#222);
+transform:translateY(-2px);
+box-shadow:
+0 10px 20px rgba(0,0,0,0.8);
+}
+
+button:active{
+transform:scale(.98);
+}
+
+/* MATRIX */
+
+#matrix{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+color:#0f0;
+font-family:monospace;
+font-size:18px;
+overflow:hidden;
+z-index:9998;
+}
+
+/* VIRUS */
+
+#virus{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#200;
+color:red;
+font-size:45px;
+align-items:center;
+justify-content:center;
+z-index:9999;
+}
+
+/* DOWNLOAD BAR */
+
+#download{
+display:none;
+position:fixed;
+bottom:40px;
+left:50%;
+transform:translateX(-50%);
+width:80%;
+height:30px;
+background:#333;
+z-index:9999;
+border-radius:6px;
+overflow:hidden;
+}
+
+#bar{
+height:100%;
+width:0%;
+background:red;
+}
+
+/* RICKROLL */
+
+#rick{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:10000;
+background:black;
+}
+
+video{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Anime Karbit Test</h1>
+
+<div id="quizBox">
+<div id="level"></div>
+<div id="question"></div>
+<div id="answers"></div>
+</div>
+
+<div id="matrix"></div>
+
+<div id="virus">
+⚠ SYSTEM HACKED ⚠
+</div>
+
+<div id="download">
+<div id="bar"></div>
+</div>
+
+<div id="rick">
+<video id="rickVideo" playsinline>
+<source src="https://cdn.pixabay.com/video/2022/10/19/135290-762936483_large.mp4">
+</video>
+</div>
+
+<audio id="alarm">
+<source src="https://www.soundjay.com/misc/sounds/alarm-clock-01.mp3">
+</audio>
+
+<script>
+
+let level=1
+let qIndex=0
+
+const quiz=[
+
+[
+{q:"Hokage ke 7?",a:["Naruto","Minato","Kakashi","Tsunade"],c:0},
+{q:"Kapten Straw Hat?",a:["Luffy","Zoro","Sanji","Law"],c:0},
+{q:"Rival Goku?",a:["Vegeta","Frieza","Cell","Beerus"],c:0},
+{q:"Anime Titan?",a:["AOT","Naruto","Bleach","OP"],c:0},
+{q:"MC Death Note?",a:["Light","L","Near","Ryuk"],c:0}
+],
+
+[
+{q:"Bankai milik Ichigo?",a:["Tensa Zangetsu","Zangetsu","Getsuga","Mugetsu"],c:0},
+{q:"Nama pedang Tanjiro?",a:["Nichirin","Katana","Blade","Sun"],c:0},
+{q:"Sensei Naruto?",a:["Kakashi","Jiraiya","Iruka","Asuma"],c:0},
+{q:"Kapten Levi dari anime?",a:["AOT","Naruto","Tokyo Ghoul","OP"],c:0},
+{q:"MC Tokyo Ghoul?",a:["Kaneki","Touka","Arima","Uta"],c:0}
+],
+
+[
+{q:"Saitama berasal dari anime?",a:["One Punch Man","Mob Psycho","Bleach","AOT"],c:0},
+{q:"MC Jujutsu Kaisen?",a:["Itadori","Gojo","Megumi","Yuta"],c:0},
+{q:"MC Chainsaw Man?",a:["Denji","Aki","Power","Makima"],c:0},
+{q:"MC Demon Slayer?",a:["Tanjiro","Zenitsu","Inosuke","Rengoku"],c:0},
+{q:"MC Solo Leveling?",a:["Sung Jinwoo","Baek","Choi","Igris"],c:0}
+],
+
+[
+{q:"Madara clan?",a:["Uchiha","Senju","Hyuga","Uzumaki"],c:0},
+{q:"Luffy Gear 5?",a:["Nika","Gear4","Sun","Joyboy"],c:0},
+{q:"Anime dengan alchemy?",a:["FMA","Bleach","Naruto","OP"],c:0},
+{q:"MC Code Geass?",a:["Lelouch","Suzaku","C2","Kallen"],c:0},
+{q:"MC Steins Gate?",a:["Okabe","Kurisu","Daru","Mayuri"],c:0}
+],
+
+[
+{q:"Author One Piece?",a:["Oda","Kishi","Kubo","Toriyama"],c:0},
+{q:"Studio AOT final?",a:["MAPPA","WIT","Bones","UFO"],c:0},
+{q:"Anime Fate studio?",a:["Ufotable","MAPPA","Bones","A1"],c:0},
+{q:"Evangelion director?",a:["Anno","Miyazaki","Shinkai","Hosoda"],c:0},
+{q:"Studio Demon Slayer?",a:["Ufotable","MAPPA","Bones","Pierrot"],c:0}
+]
+
+]
+
+function load(){
+
+let q=quiz[level-1][qIndex]
+
+document.getElementById("level").innerText="Level "+level+" / 5"
+
+document.getElementById("question").innerText=q.q
+
+let html=""
+
+q.a.forEach((ans,i)=>{
+
+html+=`<button onclick="answer(${i})">${ans}</button>`
+
+})
+
+document.getElementById("answers").innerHTML=html
+
+}
+
+function answer(i){
+
+qIndex++
+
+if(qIndex>=5){
+
+level++
+qIndex=0
+
+}
+
+if(level>5){
+
+startPrank()
+
+}else{
+
+load()
+
+}
+
+}
+
+function startPrank(){
+
+document.getElementById("quizBox").style.display="none"
+
+document.documentElement.requestFullscreen()
+
+matrix()
+
+setTimeout(virus,3000)
+setTimeout(download,5000)
+setTimeout(shakeStart,7000)
+setTimeout(tabSpam,8000)
+setTimeout(rickroll,11000)
+
+}
+
+function matrix(){
+
+let m=document.getElementById("matrix")
+
+m.style.display="block"
+
+let chars="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%"
+
+setInterval(()=>{
+
+let line=""
+
+for(let i=0;i<80;i++){
+
+line+=chars[Math.floor(Math.random()*chars.length)]
+
+}
+
+m.innerHTML+=line+"<br>"
+
+m.scrollTop=m.scrollHeight
+
+},40)
+
+}
+
+function virus(){
+
+document.getElementById("virus").style.display="flex"
+
+document.getElementById("alarm").play()
+
+}
+
+function download(){
+
+let d=document.getElementById("download")
+let bar=document.getElementById("bar")
+
+d.style.display="block"
+
+let p=0
+
+let int=setInterval(()=>{
+
+p+=2
+bar.style.width=p+"%"
+
+if(p>=100) clearInterval(int)
+
+},80)
+
+}
+
+let shake
+
+function shakeStart(){
+
+shake=setInterval(()=>{
+
+document.body.style.transform=`translate(${Math.random()*20-10}px,${Math.random()*20-10}px)`
+
+},50)
+
+setTimeout(()=>{
+
+clearInterval(shake)
+document.body.style.transform="translate(0,0)"
+
+},3000)
+
+}
+
+function tabSpam(){
+
+for(let i=0;i<3;i++){
+
+window.open(location.href)
+
+}
+
+}
+
+function rickroll(){
+
+document.getElementById("matrix").style.display="none"
+document.getElementById("virus").style.display="none"
+document.getElementById("download").style.display="none"
+
+document.getElementById("rick").style.display="block"
+
+let v=document.getElementById("rickVideo")
+
+v.volume=1
+v.play()
+
+audioBoost(v)
+
+}
+
+function audioBoost(v){
+
+let ctx=new AudioContext()
+
+let src=ctx.createMediaElementSource(v)
+
+let gain=ctx.createGain()
+
+let distortion=ctx.createWaveShaper()
+
+gain.gain.value=6
+
+function curve(a){
+
+let n=44100
+let c=new Float32Array(n)
+
+for(let i=0;i<n;i++){
+
+let x=i*2/n-1
+c[i]=(3+a)*x*20*Math.PI/(Math.PI+a*Math.abs(x))
+
+}
+
+return c
+
+}
+
+distortion.curve=curve(400)
+
+src.connect(gain)
+gain.connect(distortion)
+distortion.connect(ctx.destination)
+
+}
+
+load()
+
+</script>
+
+</body>
+</html>
