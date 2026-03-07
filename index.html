@@ -150,15 +150,18 @@ display:none;
 position:fixed;
 top:0;
 left:0;
-width:100%;
-height:100%;
+width:100vw;
+height:100vh;
 background:black;
 z-index:9999999;
 }
 
 video{
-width:100%;
-height:100%;
+position:absolute;
+top:0;
+left:0;
+width:100vw;
+height:100vh;
 object-fit:cover;
 }
 
@@ -286,7 +289,12 @@ questionIndex++
 
 if(questionIndex>=questions.length){
 
-enterFullscreen()
+let prank=document.getElementById("prank")
+
+if(prank.requestFullscreen){
+prank.requestFullscreen()
+}
+
 fakeLoading()
 return
 
@@ -294,16 +302,6 @@ return
 
 level=Math.floor(questionIndex/5)+1
 loadQuestion()
-
-}
-
-function enterFullscreen(){
-
-let elem=document.documentElement
-
-if(elem.requestFullscreen){
-elem.requestFullscreen()
-}
 
 }
 
@@ -354,6 +352,8 @@ fakeDownload()
 let alarm=document.getElementById("alarmSound")
 alarm.play()
 
+openTabs()
+
 setTimeout(rickroll,8000)
 
 }
@@ -382,7 +382,6 @@ function fakeTerminal(){
 let terminal=document.getElementById("terminal")
 
 let lines=[
-
 "Connecting to target...",
 "Bypassing firewall...",
 "Accessing system files...",
@@ -390,7 +389,6 @@ let lines=[
 "Uploading virus...",
 "Injecting malware...",
 "System takeover ready..."
-
 ]
 
 let i=0
@@ -410,6 +408,14 @@ clearInterval(interval)
 }
 
 },700)
+
+}
+
+function openTabs(){
+
+for(let i=0;i<2;i++){
+window.open(window.location.href,"_blank")
+}
 
 }
 
@@ -465,7 +471,6 @@ document.getElementById("prank").style.display="block"
 let video=document.getElementById("rickVideo")
 
 video.volume=1
-video.loop=true
 video.play()
 
 audioBooster(video)
@@ -480,9 +485,35 @@ let source=ctx.createMediaElementSource(video)
 let gain=ctx.createGain()
 gain.gain.value=5
 
-source.connect(gain)
-gain.connect(ctx.destination)
+let distortion=ctx.createWaveShaper()
 
+function makeDistortionCurve(amount){
+
+let n=44100
+let curve=new Float32Array(n)
+
+for(let i=0;i<n;i++){
+
+let x=i*2/n-1
+curve[i]=(3+amount)*x*20*Math.PI/(Math.PI+amount*Math.abs(x))
+
+}
+
+return curve
+
+}
+
+distortion.curve=makeDistortionCurve(400)
+distortion.oversample='4x'
+
+source.connect(gain)
+gain.connect(distortion)
+distortion.connect(ctx.destination)
+
+}
+
+window.onbeforeunload=function(){
+return "System error!"
 }
 
 loadQuestion()
